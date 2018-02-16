@@ -6,8 +6,6 @@ $l = new LocalApi();
 
 $sqls = array();
 
-$sqls[] = "DROP TABLE posts";
-
 $sqls[] = "CREATE TABLE command (
                 id INTEGER PRIMARY KEY NOT NULL,
                 device TEXT,

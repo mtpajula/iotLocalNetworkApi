@@ -17,9 +17,10 @@ class LocalApi {
 
         $this->ifcommand = false;
         // Set console command, if table=command and method is POST
-        $this->console   = "python3 .../iotLocalNetworkServer/IotServer.py";
+        $this->console   = ".../iotLocalNetworkServer/run.sh";
 
-        $this->db = new PDO('sqlite:iot.sqlite3');
+        $this->db = new PDO('mysql:host=localhost;dbname=api;charset=utf8mb4', 'user', 'password');
+        // $this->db = new PDO('sqlite:iot.sqlite3');
         // Set errormode to exceptions
         $this->db->setAttribute(PDO::ATTR_ERRMODE,
                                 PDO::ERRMODE_EXCEPTION);
@@ -40,9 +41,7 @@ class LocalApi {
             // Check if we run console command
             if ($method === 'POST' and $table === "command") {
                 $this->ifcommand = true;
-                error_log("ifcommand = true", 0);
-            } else {
-                error_log("ifcommand = false", 0);
+                error_log("ifcommand true", 0);
             }
 
             // retrieve dataforms for dbo sql preparement
@@ -97,6 +96,7 @@ class LocalApi {
         }
         echo $this->getRespond();
         $this->close();
+        $this->runTerminal();
     }
 
     public function setSql($s)
@@ -108,12 +108,6 @@ class LocalApi {
     {
         try {
             $this->stmt = $this->db->prepare($this->sql);
-
-            // Inform, that new command is in
-            if ($this->ifcommand) {
-                $this->runTerminal();
-            }
-
             return $this->stmt->execute($this->toexecute);
 
         } catch (Exception $e) {
@@ -124,8 +118,10 @@ class LocalApi {
 
     public function runTerminal()
     {
-        error_log("runTerminal", 0);
-        error_log(exec($this->console), 0);
+        if ($this->ifcommand and $this->error == null) {
+            error_log("runTerminal: " . $this->console, 0);
+            exec($this->console);
+        }
     }
 
     public function getRespond()
