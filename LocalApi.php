@@ -19,7 +19,7 @@ class LocalApi {
         // Set console command, if table=command and method is POST
         $this->console   = ".../iotLocalNetworkServer/run.sh";
 
-        $this->db = new PDO('mysql:host=localhost;dbname=api;charset=utf8mb4', 'user', 'password');
+        $this->db = new PDO('mysql:host=localhost;dbname=api', 'user', 'pass');
         // $this->db = new PDO('sqlite:iot.sqlite3');
         // Set errormode to exceptions
         $this->db->setAttribute(PDO::ATTR_ERRMODE,
