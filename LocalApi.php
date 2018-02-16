@@ -9,6 +9,7 @@ class LocalApi {
     public $error;
     public $ifcommand;
     public $console;
+    public $method;
 
     public function __construct()
     {
@@ -30,7 +31,7 @@ class LocalApi {
     {
         try {
             // get the HTTP method, path and body of the request
-            $method = $_SERVER['REQUEST_METHOD'];
+            $this->method = $_SERVER['REQUEST_METHOD'];
             $request = explode('/', trim($_SERVER['PATH_INFO'],'/'));
             $input = json_decode(file_get_contents('php://input'),true);
 
@@ -39,7 +40,7 @@ class LocalApi {
             $id = array_shift($request)+0;
 
             // Check if we run console command
-            if ($method === 'POST' and $table === "command") {
+            if ($this->method === 'POST' and $table === "command") {
                 $this->ifcommand = true;
                 error_log("ifcommand true", 0);
             }
@@ -59,7 +60,7 @@ class LocalApi {
             }
 
             // create SQL based on HTTP method
-            switch ($method) {
+            switch ($this->method) {
               case 'GET':
                 if ($id > 0) {
                     $this->sql = "SELECT * FROM $table WHERE id = ?";
@@ -131,8 +132,10 @@ class LocalApi {
         }
 
         try {
-            $result = $this->stmt->fetchAll(PDO::FETCH_ASSOC);
-            return json_encode($result);
+            if ($this->method != "GET") {
+                $result = $this->stmt->fetchAll(PDO::FETCH_ASSOC);
+                return json_encode($result);
+            }
         } catch (Exception $e) {
             $this->error = $e->getMessage();
             return $this->getErrorRespond();
