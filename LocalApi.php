@@ -132,7 +132,7 @@ class LocalApi {
         }
 
         try {
-            if ($this->method != "GET") {
+            if ($this->method == "GET") {
                 $result = $this->stmt->fetchAll(PDO::FETCH_ASSOC);
                 return json_encode($result);
             }
