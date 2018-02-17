@@ -1,2 +1,5 @@
 # do not load db to internet
 iot.sqlite3
+
+# No settings -file
+settings.php

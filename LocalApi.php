@@ -1,4 +1,5 @@
 <?php
+include_once 'settings.php';
 
 class LocalApi {
 
@@ -10,6 +11,7 @@ class LocalApi {
     public $ifcommand;
     public $console;
     public $method;
+    public $respond;
 
     public function __construct()
     {
@@ -17,10 +19,13 @@ class LocalApi {
         $this->error     = null;
 
         $this->ifcommand = false;
-        // Set console command, if table=command and method is POST
-        $this->console   = ".../iotLocalNetworkServer/run.sh";
+        $this->respond   = "";
 
-        $this->db = new PDO('mysql:host=localhost;dbname=api', 'user', 'pass');
+        global $COMMAND, $DBNAME, $USERNAME, $PASSWD;
+        // Set console command, if table=command and method is POST
+        $this->console   = $COMMAND;
+
+        $this->db = new PDO('mysql:host=localhost;dbname='.$DBNAME, $USERNAME, $PASSWD);
         // $this->db = new PDO('sqlite:iot.sqlite3');
         // Set errormode to exceptions
         $this->db->setAttribute(PDO::ATTR_ERRMODE,
@@ -95,9 +100,9 @@ class LocalApi {
         if ($this->createRequest()) {
             $this->executeRequest();
         }
+        $this->runTerminal();
         echo $this->getRespond();
         $this->close();
-        $this->runTerminal();
     }
 
     public function setSql($s)
@@ -110,7 +115,6 @@ class LocalApi {
         try {
             $this->stmt = $this->db->prepare($this->sql);
             return $this->stmt->execute($this->toexecute);
-
         } catch (Exception $e) {
             $this->error = $e->getMessage();
             return false;
@@ -121,7 +125,7 @@ class LocalApi {
     {
         if ($this->ifcommand and $this->error == null) {
             error_log("runTerminal: " . $this->console, 0);
-            exec($this->console);
+            $this->respond = "runTerminal:".shell_exec($this->console).";";
         }
     }
 
@@ -135,6 +139,8 @@ class LocalApi {
             if ($this->method != "GET") {
                 $result = $this->stmt->fetchAll(PDO::FETCH_ASSOC);
                 return json_encode($result);
+            } else {
+                $this->respond = "ok";
             }
         } catch (Exception $e) {
             $this->error = $e->getMessage();
@@ -145,6 +151,11 @@ class LocalApi {
     public function getErrorRespond()
     {
         return '{"error":"'.$this->error.'"}';
+    }
+
+    public function getResultRespond()
+    {
+        return '{"method":"'.$this->method.'","payload":"'.$this->respond.'"}';
     }
 
     public function close()
