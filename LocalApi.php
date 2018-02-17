@@ -125,7 +125,7 @@ class LocalApi {
     {
         if ($this->ifcommand and $this->error == null) {
             error_log("runTerminal: " . $this->console, 0);
-            $this->respond += "runTerminal:".shell_exec($this->console).";";
+            $this->respond .= "runTerminal:".shell_exec($this->console).";";
         }
     }
 
@@ -140,7 +140,7 @@ class LocalApi {
                 $result = $this->stmt->fetchAll(PDO::FETCH_ASSOC);
                 return json_encode($result);
             } else {
-                $this->respond += "success:ok;";
+                $this->respond .= "success:ok;";
                 return $this->getResultRespond();
             }
         } catch (Exception $e) {
