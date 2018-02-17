@@ -23,7 +23,7 @@ class LocalApi {
 
         global $COMMAND, $DBNAME, $USERNAME, $PASSWD;
         // Set console command, if table=command and method is POST
-        $this->console   = $COMMAND;
+        $this->console   = $COMMAND." 2>&1";
 
         $this->db = new PDO('mysql:host=localhost;dbname='.$DBNAME, $USERNAME, $PASSWD);
         // $this->db = new PDO('sqlite:iot.sqlite3');
