@@ -9,8 +9,12 @@ Using api:
 
     api.php/[tablename]/[id]
 
+HTTP methods available: GET, POST, PUT, DELETE
+
 Creating tables: run create.php
 
 ## Installing
 
-in LocalApi.php class construct -method, set your PDO db -connection.
+    cp settings.demo.php settings.php
+
+in **settings.php** set your PDO-MySQL -login infromation.
